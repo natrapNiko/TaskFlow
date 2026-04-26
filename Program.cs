@@ -15,20 +15,25 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 
-    if (!db.Categories.Any())
-    {
-        db.Categories.AddRange(
-            new Category { Name = "Work" },
-            new Category { Name = "Personal" },
-            new Category { Name = "Shopping" },
-            new Category { Name = "Health" },
-            new Category { Name = "Finance" },
-            new Category { Name = "Education" },
-            new Category { Name = "Home" },
-            new Category { Name = "Other" }
-        );
-        await db.SaveChangesAsync();
-    }
+    string[] predefined =
+    [
+        "Work", "Personal", "Shopping", "Health & Fitness",
+        "Finance", "Education", "Home & Cleaning",
+        "Travel", "Family", "Hobbies"
+    ];
+
+    var existing = db.Categories.Select(c => c.Name).ToHashSet();
+
+    foreach (var name in predefined.Where(n => !existing.Contains(n)))
+        db.Categories.Add(new Category { Name = name });
+
+    // Remove old categories that are not predefined and have no tasks
+    var toRemove = db.Categories
+        .Where(c => !predefined.Contains(c.Name) && !c.TodoItems.Any())
+        .ToList();
+    db.Categories.RemoveRange(toRemove);
+
+    await db.SaveChangesAsync();
 }
 
 if (!app.Environment.IsDevelopment())
