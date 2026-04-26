@@ -24,6 +24,18 @@
             </div>
 
             <div class="mb-3">
+                <label asp-for="Priority" class="form-label"></label>
+                <select asp-for="Priority" asp-items="Html.GetEnumSelectList<TaskFlow.Models.Priority>()" class="form-select"></select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CategoryId" class="form-label">Category</label>
+                <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+                    <option value="">-- None --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label asp-for="DueDate" class="form-label"></label>
                 <input asp-for="DueDate" type="date" class="form-control" />
             </div>

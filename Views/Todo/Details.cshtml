@@ -14,6 +14,22 @@
             <dt class="col-sm-4">Description</dt>
             <dd class="col-sm-8">@(Model.Description ?? "-")</dd>
 
+            <dt class="col-sm-4">Priority</dt>
+            <dd class="col-sm-8">
+                @{
+                    var badgeColor = Model.Priority switch
+                    {
+                        TaskFlow.Models.Priority.High => "danger",
+                        TaskFlow.Models.Priority.Medium => "warning",
+                        _ => "secondary"
+                    };
+                }
+                <span class="badge bg-@badgeColor">@Model.Priority</span>
+            </dd>
+
+            <dt class="col-sm-4">Category</dt>
+            <dd class="col-sm-8">@(Model.Category?.Name ?? "-")</dd>
+
             <dt class="col-sm-4">Status</dt>
             <dd class="col-sm-8">
                 @if (Model.IsCompleted)

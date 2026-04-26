@@ -20,10 +20,7 @@ public class TodoControllerTests : IDisposable
         _controller = new TodoController(_db);
     }
 
-    public void Dispose()
-    {
-        _db.Dispose();
-    }
+    public void Dispose() => _db.Dispose();
 
     [Fact]
     public async Task Index_ReturnsViewWithAllItems()
@@ -34,11 +31,61 @@ public class TodoControllerTests : IDisposable
         );
         await _db.SaveChangesAsync();
 
-        var result = await _controller.Index();
+        var result = await _controller.Index(null, null, null, null, 1);
 
         var view = Assert.IsType<ViewResult>(result);
-        var model = Assert.IsAssignableFrom<IEnumerable<TodoItem>>(view.Model);
-        Assert.Equal(2, model.Count());
+        var vm = Assert.IsType<TodoIndexViewModel>(view.Model);
+        Assert.Equal(2, vm.Items.Count());
+    }
+
+    [Fact]
+    public async Task Index_SearchFiltersItems()
+    {
+        _db.TodoItems.AddRange(
+            new TodoItem { Title = "Buy milk" },
+            new TodoItem { Title = "Write report" }
+        );
+        await _db.SaveChangesAsync();
+
+        var result = await _controller.Index("milk", null, null, null, 1);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var vm = Assert.IsType<TodoIndexViewModel>(view.Model);
+        Assert.Single(vm.Items);
+        Assert.Equal("Buy milk", vm.Items.First().Title);
+    }
+
+    [Fact]
+    public async Task Index_PriorityFilterWorks()
+    {
+        _db.TodoItems.AddRange(
+            new TodoItem { Title = "High task", Priority = Priority.High },
+            new TodoItem { Title = "Low task", Priority = Priority.Low }
+        );
+        await _db.SaveChangesAsync();
+
+        var result = await _controller.Index(null, null, Priority.High, null, 1);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var vm = Assert.IsType<TodoIndexViewModel>(view.Model);
+        Assert.Single(vm.Items);
+        Assert.Equal(Priority.High, vm.Items.First().Priority);
+    }
+
+    [Fact]
+    public async Task Index_PaginationReturnsCorrectPage()
+    {
+        for (int i = 1; i <= 8; i++)
+            _db.TodoItems.Add(new TodoItem { Title = $"Task {i}" });
+        await _db.SaveChangesAsync();
+
+        var result = await _controller.Index(null, null, null, null, 2);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var vm = Assert.IsType<TodoIndexViewModel>(view.Model);
+        Assert.Equal(3, vm.Items.Count());
+        Assert.Equal(2, vm.CurrentPage);
+        Assert.Equal(2, vm.TotalPages);
     }
 
     [Fact]
@@ -103,8 +150,7 @@ public class TodoControllerTests : IDisposable
 
         await _controller.ToggleComplete(item.Id);
 
-        var updated = await _db.TodoItems.FindAsync(item.Id);
-        Assert.True(updated!.IsCompleted);
+        Assert.True((await _db.TodoItems.FindAsync(item.Id))!.IsCompleted);
     }
 
     [Fact]
@@ -112,5 +158,17 @@ public class TodoControllerTests : IDisposable
     {
         var result = await _controller.Details(999);
         Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task CreateCategory_ValidCategory_RedirectsToCategories()
+    {
+        var category = new Category { Name = "Work" };
+
+        var result = await _controller.CreateCategory(category);
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Categories", redirect.ActionName);
+        Assert.Equal(1, await _db.Categories.CountAsync());
     }
 }

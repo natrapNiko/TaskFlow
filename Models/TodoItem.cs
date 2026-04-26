@@ -16,4 +16,9 @@ public class TodoItem
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime? DueDate { get; set; }
+
+    public Priority Priority { get; set; } = Priority.Medium;
+
+    public int? CategoryId { get; set; }
+    public Category? Category { get; set; }
 }
