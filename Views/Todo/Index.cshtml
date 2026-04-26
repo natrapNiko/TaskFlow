@@ -5,7 +5,13 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>My Tasks</h2>
-    <a asp-action="Create" class="btn btn-primary">+ New Task</a>
+    @if (Model.CategoryFilter.HasValue)
+    {
+        var selectedCategory = Model.Categories.FirstOrDefault(c => c.Id == Model.CategoryFilter);
+        <a asp-action="Create" asp-route-categoryId="@Model.CategoryFilter" class="btn btn-primary">
+            + Add Task to @selectedCategory?.Name
+        </a>
+    }
 </div>
 
 <form method="get" class="row g-2 mb-4">

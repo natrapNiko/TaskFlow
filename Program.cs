@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskFlow.Data;
+using TaskFlow.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,21 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+
+    if (!db.Categories.Any())
+    {
+        db.Categories.AddRange(
+            new Category { Name = "Work" },
+            new Category { Name = "Personal" },
+            new Category { Name = "Shopping" },
+            new Category { Name = "Health" },
+            new Category { Name = "Finance" },
+            new Category { Name = "Education" },
+            new Category { Name = "Home" },
+            new Category { Name = "Other" }
+        );
+        await db.SaveChangesAsync();
+    }
 }
 
 if (!app.Environment.IsDevelopment())

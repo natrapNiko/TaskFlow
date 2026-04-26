@@ -3,42 +3,28 @@
     ViewData["Title"] = "Categories";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Categories</h2>
-    <a asp-action="CreateCategory" class="btn btn-primary">+ New Category</a>
-</div>
+<h2>Categories</h2>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">No categories yet.</div>
-}
-else
-{
-    <table class="table table-hover">
-        <thead class="table-dark">
+<table class="table table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Category</th>
+            <th>Tasks</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cat in Model)
+        {
             <tr>
-                <th>Name</th>
-                <th>Tasks</th>
-                <th>Actions</th>
+                <td>@cat.Name</td>
+                <td>@cat.TodoItems.Count</td>
+                <td>
+                    <a asp-action="Index" asp-route-categoryFilter="@cat.Id" class="btn btn-sm btn-outline-secondary">View Tasks</a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var cat in Model)
-            {
-                <tr>
-                    <td>@cat.Name</td>
-                    <td>@cat.TodoItems.Count</td>
-                    <td>
-                        <form asp-action="DeleteCategory" asp-route-id="@cat.Id" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                    onclick="return confirm('Delete this category?')">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
-<a asp-action="Index" class="btn btn-secondary">Back to Tasks</a>
+<a asp-action="Index" class="btn btn-secondary mt-2">Back to Tasks</a>

@@ -55,10 +55,10 @@ public class TodoController(AppDbContext db) : Controller
         return View(vm);
     }
 
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create(int? categoryId)
     {
-        ViewBag.Categories = new SelectList(await db.Categories.ToListAsync(), "Id", "Name");
-        return View();
+        ViewBag.Categories = new SelectList(await db.Categories.ToListAsync(), "Id", "Name", categoryId);
+        return View(new TodoItem { CategoryId = categoryId });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -66,7 +66,7 @@ public class TodoController(AppDbContext db) : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.Categories = new SelectList(await db.Categories.ToListAsync(), "Id", "Name");
+            ViewBag.Categories = new SelectList(await db.Categories.ToListAsync(), "Id", "Name", item.CategoryId);
             return View(item);
         }
         item.CreatedAt = DateTime.UtcNow;
@@ -133,30 +133,6 @@ public class TodoController(AppDbContext db) : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // --- Category management ---
     public async Task<IActionResult> Categories() =>
         View(await db.Categories.Include(c => c.TodoItems).ToListAsync());
-
-    public IActionResult CreateCategory() => View();
-
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateCategory(Category category)
-    {
-        if (!ModelState.IsValid) return View(category);
-        db.Categories.Add(category);
-        await db.SaveChangesAsync();
-        return RedirectToAction(nameof(Categories));
-    }
-
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteCategory(int id)
-    {
-        var category = await db.Categories.FindAsync(id);
-        if (category is not null)
-        {
-            db.Categories.Remove(category);
-            await db.SaveChangesAsync();
-        }
-        return RedirectToAction(nameof(Categories));
-    }
 }

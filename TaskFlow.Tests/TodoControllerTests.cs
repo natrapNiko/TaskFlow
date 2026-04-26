@@ -159,16 +159,4 @@ public class TodoControllerTests : IDisposable
         var result = await _controller.Details(999);
         Assert.IsType<NotFoundResult>(result);
     }
-
-    [Fact]
-    public async Task CreateCategory_ValidCategory_RedirectsToCategories()
-    {
-        var category = new Category { Name = "Work" };
-
-        var result = await _controller.CreateCategory(category);
-
-        var redirect = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Categories", redirect.ActionName);
-        Assert.Equal(1, await _db.Categories.CountAsync());
-    }
 }
