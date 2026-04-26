@@ -1,0 +1,32 @@
+# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Published output
+publish/
+out/
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+*.nuget.props
+*.nuget.targets
+
+# OS
+.DS_Store
+Thumbs.db
