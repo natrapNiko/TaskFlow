@@ -1,8 +1,37 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to TaskFlow</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">your application</a>.</p>
+<div class="text-center py-5">
+    <h1 class="display-3 fw-bold">TaskFlow</h1>
+    <p class="lead text-muted mb-4">Stay organized. Get things done.</p>
+    <a asp-controller="Todo" asp-action="Index" class="btn btn-primary btn-lg me-2">Go to My Tasks</a>
+    <a asp-controller="Todo" asp-action="Categories" class="btn btn-outline-secondary btn-lg">Browse Categories</a>
+</div>
+
+<div class="row text-center mt-5 g-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">Organize</h4>
+                <p class="card-text text-muted">Group your tasks by category — Work, Personal, Health, Travel and more.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">Prioritize</h4>
+                <p class="card-text text-muted">Mark tasks as Low, Medium or High priority so you always know what comes first.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">Track</h4>
+                <p class="card-text text-muted">Set due dates, complete tasks, and filter your list to stay focused on what matters.</p>
+            </div>
+        </div>
+    </div>
 </div>
